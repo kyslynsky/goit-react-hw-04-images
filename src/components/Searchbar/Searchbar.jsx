@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { Notify } from 'notiflix';
 
 export class Searchbar extends Component {
   state = {
@@ -6,11 +7,21 @@ export class Searchbar extends Component {
   };
 
   handleInputChange = e => {
-    this.setState({ query: e.currentTarget.value.toLowerCase().trim(' ') });
+    this.setState({ query: e.currentTarget.value.toLowerCase() });
   };
 
   handleSearchSubmit = e => {
     e.preventDefault();
+
+    if (this.state.query.trim(' ') === '') {
+      Notify.warning('There is nothing to find', {
+        clickToClose: true,
+      });
+      return;
+    }
+
+    this.props.onSubmit(this.state.query);
+    this.setState({ query: '' });
   };
 
   render() {
