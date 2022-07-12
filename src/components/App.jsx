@@ -5,7 +5,6 @@ import { ImageGallery } from 'components/ImageGallery';
 export class App extends Component {
   state = {
     query: '',
-    page: 1,
   };
 
   handleSubmit = query => {
@@ -13,12 +12,14 @@ export class App extends Component {
   };
 
   render() {
-    const { query, page } = this.state;
+    const { query } = this.state;
 
     return (
       <div>
         <Searchbar onSubmit={this.handleSubmit} />
-        <ImageGallery searchQuery={query} page={page} />
+        <ImageGallery
+          searchQuery={query} //page={page}
+        />
       </div>
     );
   }
