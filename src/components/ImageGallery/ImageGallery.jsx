@@ -1,7 +1,9 @@
 import { Component } from 'react';
+import { Notify } from 'notiflix';
 import * as API from 'services/api';
 import { ImageGalleryItem } from 'components/ImageGalleryItem';
 import { Button } from 'components/Button';
+import { startLoader, stopLoader } from 'components/Loader';
 
 export class ImageGallery extends Component {
   state = {
@@ -22,7 +24,9 @@ export class ImageGallery extends Component {
         const response = await API.getImages(searchQuery, page);
 
         if (response.total === 0) {
-          alert('Sorry, no results matching your request');
+          Notify.failure('Sorry, no results matching your request', {
+            clickToClose: true,
+          });
           throw new Error();
         }
 
@@ -52,15 +56,18 @@ export class ImageGallery extends Component {
     return (
       <>
         {status === 'idle' && <p>Let`s start</p>}
-        {status === 'pending' && <div>Loading...</div>}
-        {status === 'rejected' && <h1>Ups...something went wrong</h1>}
-        {status === 'resolved' && (
-          <>
+        {status === 'pending' && startLoader()}
+        {(status === 'rejected' && <h1>Ups... something went wrong</h1>) ||
+          stopLoader()}
+        {status === 'resolved' &&
+          ((
             <ul>
               <ImageGalleryItem data={data} />
             </ul>
-            <Button onClick={this.handleLoadMore} status={status} />
-          </>
+          ) ||
+            stopLoader)}
+        {data.length > 0 && (
+          <Button onClick={this.handleLoadMore} status={status} />
         )}
       </>
     );
