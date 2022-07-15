@@ -1,5 +1,5 @@
-export const Button = ({ onClick, status }) => {
-  console.log(status);
-
-  return <button onClick={onClick}>Load more</button>;
-};
+export const Button = ({ onClick, status }) => (
+  <button disabled={status === 'pending'} onClick={onClick}>
+    Load more
+  </button>
+);
