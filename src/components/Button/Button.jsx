@@ -1,5 +1,13 @@
+import PropTypes from 'prop-types';
+import { BtnLoadMore } from './Button.styled';
+
 export const Button = ({ onClick, status }) => (
-  <button disabled={status === 'pending'} onClick={onClick}>
+  <BtnLoadMore disabled={status === 'pending'} onClick={onClick}>
     Load more
-  </button>
+  </BtnLoadMore>
 );
+
+Button.propTypes = {
+  status: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+};

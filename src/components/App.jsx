@@ -1,8 +1,10 @@
 import { Component } from 'react';
 import { Notify } from 'notiflix';
-import * as API from 'services/api';
+import { getImages, resultsQuantity } from 'services/api';
+import { GlobalStyle, Container } from './GlobalStyles';
 import { Searchbar } from 'components/Searchbar';
 import { ImageGallery } from 'components/ImageGallery';
+import { Modal } from 'components/Modal';
 import { Button } from 'components/Button';
 import { startLoader, stopLoader } from 'components/Loader';
 
@@ -12,7 +14,8 @@ export class App extends Component {
     query: '',
     page: 1,
     status: 'idle',
-    error: null,
+    url: null,
+    isModalOpen: false,
   };
 
   async componentDidUpdate(_, prevState) {
@@ -22,7 +25,7 @@ export class App extends Component {
       this.setState({ status: 'pending' });
 
       try {
-        const response = await API.getImages(query, page);
+        const response = await getImages(query, page);
 
         if (response.total === 0) {
           Notify.failure('Sorry, no results matching your request', {
@@ -37,7 +40,7 @@ export class App extends Component {
           data: [...prevState.data, ...response.hits],
         }));
       } catch (error) {
-        this.setState({ error, status: 'rejected' });
+        this.setState({ status: 'rejected' });
       }
     }
   }
@@ -58,21 +61,38 @@ export class App extends Component {
     }));
   };
 
+  setActiveImageUrl = activeUrl => this.setState({ url: activeUrl });
+
+  openModal = () => this.setState({ isModalOpen: true });
+  closeModal = () => this.setState({ isModalOpen: false, url: '' });
+
   render() {
-    const { data, query, page, status } = this.state;
+    const { data, page, status, url } = this.state;
+    const isLastPage = Math.round(data.length / resultsQuantity) < page;
+    console.log(isLastPage);
 
     return (
-      <div>
+      <Container>
         <Searchbar onSubmit={this.handleSubmit} />
-        {status === 'idle' && <p>Let`s start</p>}
         {status === 'pending' && startLoader()}
-        {(status === 'rejected' && <h1>Ups... something went wrong</h1>) ||
+        {(status === 'rejected' && <h1> Ups... something went wrong</h1>) ||
           stopLoader()}
-        {data.length > 0 && <ImageGallery hits={data} />}
         {data.length > 0 && (
+          <ImageGallery hits={data} onPreviewClick={this.setActiveImageUrl} />
+        )}
+        {url && (
+          <Modal
+            activeUrl={url}
+            imgAlt={url}
+            onOpen={this.openModal}
+            onClose={this.closeModal}
+          />
+        )}
+        {status === 'resolved' && !isLastPage && (
           <Button onClick={this.handleLoadMore} status={status} />
         )}
-      </div>
+        <GlobalStyle />
+      </Container>
     );
   }
 }

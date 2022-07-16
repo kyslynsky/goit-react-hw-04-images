@@ -1,5 +1,13 @@
 import { Component } from 'react';
 import { Notify } from 'notiflix';
+import { GoSearch } from 'react-icons/go';
+import {
+  Header,
+  Searchform,
+  SearchButton,
+  BtnIco,
+  Input,
+} from './Searchbar.styled';
 
 export class Searchbar extends Component {
   state = {
@@ -26,13 +34,15 @@ export class Searchbar extends Component {
 
   render() {
     return (
-      <header>
-        <form onSubmit={this.handleSearchSubmit}>
-          <button type="submit">
-            <span>Search</span>
-          </button>
+      <Header>
+        <Searchform onSubmit={this.handleSearchSubmit}>
+          <SearchButton type="submit">
+            <BtnIco>
+              <GoSearch />
+            </BtnIco>
+          </SearchButton>
 
-          <input
+          <Input
             value={this.state.query}
             onChange={this.handleInputChange}
             type="text"
@@ -40,8 +50,8 @@ export class Searchbar extends Component {
             autoFocus
             placeholder="Search images and photos"
           />
-        </form>
-      </header>
+        </Searchform>
+      </Header>
     );
   }
 }
