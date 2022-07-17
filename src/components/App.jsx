@@ -10,12 +10,11 @@ import { startLoader, stopLoader } from 'components/Loader';
 
 export class App extends Component {
   state = {
-    data: [],
+    images: [],
     query: '',
     page: 1,
     status: 'idle',
     url: null,
-    isModalOpen: false,
   };
 
   async componentDidUpdate(_, prevState) {
@@ -31,13 +30,13 @@ export class App extends Component {
           Notify.failure('Sorry, no results matching your request', {
             clickToClose: true,
           });
-          this.setState({ data: [] });
+          this.setState({ images: [] });
           throw new Error();
         }
 
         this.setState(prevState => ({
           status: 'resolved',
-          data: [...prevState.data, ...response.hits],
+          images: [...prevState.images, ...response.hits],
         }));
       } catch (error) {
         this.setState({ status: 'rejected' });
@@ -52,7 +51,7 @@ export class App extends Component {
       });
       return;
     }
-    this.setState({ query, page: 1, data: [] });
+    this.setState({ query, page: 1, images: [] });
   };
 
   handleLoadMore = () => {
@@ -63,13 +62,11 @@ export class App extends Component {
 
   setActiveImageUrl = activeUrl => this.setState({ url: activeUrl });
 
-  openModal = () => this.setState({ isModalOpen: true });
-  closeModal = () => this.setState({ isModalOpen: false, url: '' });
+  closeModal = () => this.setState({ url: '' });
 
   render() {
-    const { data, page, status, url } = this.state;
-    const isLastPage = Math.round(data.length / resultsQuantity) < page;
-    console.log(isLastPage);
+    const { images, page, status, url } = this.state;
+    const isLastPage = Math.round(images.length / resultsQuantity) < page;
 
     return (
       <Container>
@@ -77,16 +74,11 @@ export class App extends Component {
         {status === 'pending' && startLoader()}
         {(status === 'rejected' && <h1> Ups... something went wrong</h1>) ||
           stopLoader()}
-        {data.length > 0 && (
-          <ImageGallery hits={data} onPreviewClick={this.setActiveImageUrl} />
+        {images.length > 0 && (
+          <ImageGallery hits={images} onPreviewClick={this.setActiveImageUrl} />
         )}
         {url && (
-          <Modal
-            activeUrl={url}
-            imgAlt={url}
-            onOpen={this.openModal}
-            onClose={this.closeModal}
-          />
+          <Modal activeUrl={url} imgAlt={url} onClose={this.closeModal} />
         )}
         {status === 'resolved' && !isLastPage && (
           <Button onClick={this.handleLoadMore} status={status} />
