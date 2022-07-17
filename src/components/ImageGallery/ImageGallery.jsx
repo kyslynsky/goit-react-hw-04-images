@@ -9,7 +9,7 @@ export const ImageGallery = ({ hits, onPreviewClick }) => (
         key={id}
         src={webformatURL}
         alt={tags}
-        onImgClick={() => onPreviewClick(largeImageURL)}
+        openModal={() => onPreviewClick(largeImageURL)}
       />
     ))}
   </GalleryList>

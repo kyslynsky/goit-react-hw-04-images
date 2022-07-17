@@ -60,7 +60,7 @@ export class App extends Component {
     }));
   };
 
-  setActiveImageUrl = activeUrl => this.setState({ url: activeUrl });
+  openModal = activeUrl => this.setState({ url: activeUrl });
 
   closeModal = () => this.setState({ url: '' });
 
@@ -75,7 +75,7 @@ export class App extends Component {
         {(status === 'rejected' && <h1> Ups... something went wrong</h1>) ||
           stopLoader()}
         {images.length > 0 && (
-          <ImageGallery hits={images} onPreviewClick={this.setActiveImageUrl} />
+          <ImageGallery hits={images} onPreviewClick={this.openModal} />
         )}
         {url && (
           <Modal activeUrl={url} imgAlt={url} onClose={this.closeModal} />
