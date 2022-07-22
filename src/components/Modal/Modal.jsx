@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import {
@@ -11,37 +11,38 @@ import {
 
 const modalRoot = document.querySelector('#modal-root');
 
-export class Modal extends Component {
-  handleEscPress = e => {
-    if (e.code === 'Escape') {
-      this.props.onClose();
+export const Modal = ({ activeUrl, imgAlt, onClose }) => {
+  useEffect(() => {
+    const handleEscPress = e => {
+      if (e.code === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscPress);
+
+    return () => {
+      window.removeEventListener('keydown', handleEscPress);
+    };
+  });
+
+  const handleBackdropClick = e => {
+    if (e.currentTarget === e.target) {
+      onClose();
     }
   };
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleEscPress);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleEscPress);
-  }
-
-  render() {
-    const { activeUrl, imgAlt, onClose } = this.props;
-
-    return createPortal(
-      <Overlay onClick={onClose}>
-        <ModalWindow aria-modal="true">
-          <CloseBtn onClick={onClose}>
-            <IcoClose />
-          </CloseBtn>
-          <ModalImage src={activeUrl} alt={imgAlt} />
-        </ModalWindow>
-      </Overlay>,
-      modalRoot
-    );
-  }
-}
+  return createPortal(
+    <Overlay onClick={handleBackdropClick}>
+      <ModalWindow aria-modal="true">
+        <CloseBtn onClick={onClose}>
+          <IcoClose />
+        </CloseBtn>
+        <ModalImage src={activeUrl} alt={imgAlt} />
+      </ModalWindow>
+    </Overlay>,
+    modalRoot
+  );
+};
 
 Modal.propTypes = {
   activeUrl: PropTypes.string.isRequired,
